@@ -53,6 +53,12 @@ There are two sections:
 Depending on what you choose it will save in the respective directory. Then it will choose the file's name using the following format `{UserTarget}_{total}.json` where `UserTarget` is the user where we got the followers/followings and `total` is the number of users we got.
 When searching for a `UserTarget` if the lowest one between the `limit` (in the config file)  and the number of followers/followings from the `UserTarget` is already met in a file then it will skip Step 2 and use that file automatically.
 
+
+### Warning:
+
+I would recommend using an alternative account which you aren't afraid of losing because it could go wrong in the worst case. However I've never experienced any bad situations using this script.
+
+
 #### Future Updates:
   - [ ] Add a followers/followings tracker so it won't repeat the count if we restart the bot
   - [ ] Add a way to find followers/followings some at a time until it reaches the limit/maximum. This way we can find followers/followings and post comments in a cycle.
