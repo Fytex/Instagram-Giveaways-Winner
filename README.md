@@ -56,3 +56,4 @@ When searching for a `UserTarget` if the lowest one between the `limit` (in the 
 #### Future Updates:
   - [ ] Add a followers/followings tracker so it won't repeat the count if we restart the bot
   - [ ] Add a way to find followers/followings some at a time until it reaches the limit/maximum. This way we can find followers/followings and post comments in a cycle.
+  - [ ] Add specific file from records (database) to use as users to mention
