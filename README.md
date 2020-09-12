@@ -15,12 +15,14 @@ There are four steps:
 
 ### Setup
 
-1. Install Python 3.6+
+1. Install Python 3.6+ (Don't forget to add in system variable `PATH`)
 2. Open terminal, change directory to Instagram-Giveaways-Winner's folder and type: `pip install -r requirements.txt`
 3. Edit config.ini (See next category)
 3. In the same terminal type: `py script.py`
 
 These commands can change depending on your configuration. Such as python/py/python3... or pip/pip3...
+
+If you need help add me on discord or join the server and ask me (links in my profile's bio) :)
 
 
 ### All settings/credentials can be changed in config.ini.
