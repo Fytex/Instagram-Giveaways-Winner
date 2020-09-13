@@ -19,7 +19,7 @@ Before installing you need to be aware that this folder contains binary files (.
 
 But don't worry... if you feel unsafe you can install these files by yourself (just put there because there are people who can't do these by themselves).
 
-1. Go to chrome://settings/help and find out which is your version
+1. Go to chrome://settings/help and find out which is your Chrome's version
 2. Go to https://chromedriver.chromium.org/downloads and find the latest version which supports your Chrome's version.
 3. Download the one for your O.S.
 4. Pick the executable and put in `drivers`' folder.
