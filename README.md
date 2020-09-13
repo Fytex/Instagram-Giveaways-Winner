@@ -13,12 +13,26 @@ There are four steps:
 4. Start spamming mentions in the post
 
 
+### Pre-Setup Warning
+
+Before installing you need to be aware that this folder contains binary files (.exe, .etc) inside `drivers`' folder from an old ChromeDriver's release for a wider compatibility.
+
+But don't worry... if you feel unsafe you can install these files by yourself (just put there because there are people who can't do these by themselves).
+
+1. Go to chrome://settings/help and find out which is your version
+2. Go to https://chromedriver.chromium.org/downloads and find the latest version which supports your Chrome's version.
+3. Download the one for your O.S.
+4. Pick the executable and put in `drivers`' folder.
+5. Replace and rename the executable with one that was already inside `driver`'s folder depending on your O.S. (You can get rid of the ones that were already inside the folder)
+
+
 ### Setup
 
-1. Install Python 3.6+ (Don't forget to add in system variable `PATH`)
-2. Open terminal, change directory to Instagram-Giveaways-Winner's folder and type: `pip install -r requirements.txt`
-3. Edit config.ini (See next category)
-3. In the same terminal type: `py script.py`
+1. Install Google Chrome (Don't change the instalation's path) -> if you guys start complaining about this specific step I'll make some updates to have wider options 
+2. Install Python 3.6+ (Don't forget to add in system variable `PATH`)
+3. Open terminal, change directory to Instagram-Giveaways-Winner's folder and type: `pip install -r requirements.txt`
+4. Edit config.ini (See next category)
+5. In the same terminal type: `py script.py`
 
 These commands can change depending on your configuration. Such as python/py/python3... or pip/pip3...
 
@@ -56,7 +70,7 @@ Depending on what you choose it will save in the respective directory. Then it w
 When searching for a `UserTarget` if the lowest one between the `limit` (in the config file)  and the number of followers/followings from the `UserTarget` is already met in a file then it will skip Step 2 and use that file automatically.
 
 
-### Warning:
+### Warnings:
 
 I would recommend using an alternative account which you aren't afraid of losing because it could go wrong in the worst case. However I've never experienced any bad situations using this script.
 
