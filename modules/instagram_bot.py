@@ -33,7 +33,7 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.0.1'
+    __version__ = '1.0.2'
 
     
     def __init__(self, window:bool=True, timeout=30):
