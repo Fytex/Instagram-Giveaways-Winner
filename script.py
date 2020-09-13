@@ -20,7 +20,7 @@ ASCII = '''
 
 
 parser = ConfigParser()
-parser.read('config.ini')
+parser.read('config.ini', encoding='utf8')
 
 post_link = parser.get('Required', 'Post Link')
 expr = parser.get('Required', 'Expression')
