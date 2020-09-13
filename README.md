@@ -60,6 +60,8 @@ When searching for a `UserTarget` if the lowest one between the `limit` (in the 
 
 I would recommend using an alternative account which you aren't afraid of losing because it could go wrong in the worst case. However I've never experienced any bad situations using this script.
 
+Instagram has a comment's request rate-limit to avoid spamming. From my research it has an algorithm which varies from user to user. Since Instagram doesn't provide a time for reset we have to try every x seconds. We chose it to be every 10 seconds. If a message pops up saying that it couldn't post the comment its because you hit that rate-limit so you just have to wait. (You don't have to do anything its all automatic)
+
 
 #### Future Updates:
   - [ ] Add a followers/followings tracker so it won't repeat the count if we restart the bot
