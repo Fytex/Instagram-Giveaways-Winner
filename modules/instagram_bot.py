@@ -33,7 +33,7 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.0.0'
+    __version__ = '1.0.1'
 
     
     def __init__(self, window:bool=True, timeout=30):
@@ -262,7 +262,7 @@ class Bot:
 
         # Wait the loading icon disappear
         WebDriverWait(self.driver, self.timeout).until_not(
-            lambda x: x.find_element_by_css_selector('article[role=\'presentation\'] form > div'))
+            lambda x: x.find_element_by_css_selector('article[role=\'presentation\'] form > button[disabled]'))
         
         
     def comment_post(self, url:str, expr:str, connections:List[str]):
