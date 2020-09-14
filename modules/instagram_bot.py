@@ -18,22 +18,29 @@ class Comments:
 
     def generate(self) -> Iterator[str]:
 
+        last_part = self.parts_expr[-1]
+
         while True:
+
+            if len(self.parts_expr) == 1:
+                yield last_part
+
+            else:
             
-            try:
+                try:
                 
-                users = next(self.iter_connections)
-            except StopIteration:
-                return
+                    users = next(self.iter_connections)
+                except StopIteration:
+                    return
 
-            comment = ''.join(chain.from_iterable(zip(self.parts_expr, users)))
+                comment = ''.join(chain.from_iterable(zip(self.parts_expr, users)))
 
-            yield (comment + self.parts_expr[-1]).replace(r'\@', '@')
+                yield (comment + last_part).replace(r'\@', '@')
 
 
 class Bot:
 
-    __version__ = '1.0.2'
+    __version__ = '1.0.3'
 
     
     def __init__(self, window:bool=True, timeout=30):
@@ -109,6 +116,9 @@ class Bot:
         Returns:
             - list of usernames
         '''
+        
+        if limit == 0:
+            return []
 
         path = 'records//' + ('followers' if followers else 'followings')
 
