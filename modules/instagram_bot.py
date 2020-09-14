@@ -255,14 +255,15 @@ class Bot:
                     .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
                     .send_keys(comment)
         
-        # Click Button to send Comment
+        # Click Post's Button to send Comment
         self.driver \
             .find_element_by_css_selector('article[role=\'presentation\'] form > button') \
             .click()
 
         # Wait the loading icon disappear
         WebDriverWait(self.driver, self.timeout).until_not(
-            lambda x: x.find_element_by_css_selector('article[role=\'presentation\'] form > button[disabled]'))
+            lambda x: x.find_element_by_css_selector('article[role=\'presentation\'] form > div'))
+        
         
         
     def comment_post(self, url:str, expr:str, connections:List[str]):
