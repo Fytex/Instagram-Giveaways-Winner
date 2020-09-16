@@ -1,5 +1,11 @@
 # Instagram-Giveaways-Winner
-Instagram Bot which when given a post url will spam mentions to increase the chances of winning
+
+![GitHub top language](https://img.shields.io/github/languages/top/fytex/Instagram-Giveaways-Winner?style=for-the-badge)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/fytex/Instagram-Giveaways-Winner?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/fytex/Instagram-Giveaways-Winner?style=for-the-badge)
+
+
+##### Instagram Bot which when given a post url will spam mentions to increase the chances of winning
 
 
 ## How does this bot work?
@@ -83,3 +89,5 @@ Instagram has a comment's request rate-limit to avoid spamming. From my research
   - [ ] Add a followers/followings tracker so it won't repeat the count if we restart the bot
   - [ ] Add a way to find followers/followings some at a time until it reaches the limit/maximum. This way we can find followers/followings and post comments in a cycle.
   - [ ] Add specific file from records (database) to use as users to mention
+  - [ ] Find out the best interval between each comment for your account
+  - [ ] Login using cookies to prevent logging in too many times using username and password
