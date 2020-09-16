@@ -41,7 +41,7 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.2.0'
+    __version__ = '1.2.1'
 
     
     def __init__(self, window:bool=True, timeout:int=30, binary_location:str=None, default_lang:bool=False):
@@ -175,7 +175,7 @@ class Bot:
         
         if followers:
             connections_link = self.driver.find_element_by_css_selector('ul li a span')
-            connections_limit = int(connections_link.get_attribute('title').replace(',', ''))
+            connections_limit = int(connections_link.get_attribute('title').replace(',', '').replace('.', ''))
         else:
             connections_link = self.driver.find_element_by_css_selector('ul li:nth-child(3) a span')
 
