@@ -40,7 +40,7 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.0.3'
+    __version__ = '1.0.4'
 
     
     def __init__(self, window:bool=True, timeout=30):
@@ -173,7 +173,8 @@ class Bot:
         connections_list = self.driver.find_element_by_css_selector('div[role=\'dialog\'] ul')
         connections_count = len(connections_list.find_elements_by_css_selector('li'))
         
-        connections_list.click()
+        not_button_area = self.driver.find_element_by_css_selector('div[role=\'dialog\'] ul li > div > div > div:nth-of-type(2)')    
+        not_button_area.click()
         
         action_chain = webdriver.ActionChains(self.driver)
 
