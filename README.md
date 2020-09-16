@@ -100,8 +100,8 @@ Instagram has a comment's request rate-limit to avoid spamming. From my research
   
   
 ### Known Bugs:
-	```
+```py
 	raise exception_class(message, screen, stacktrace)
-		# selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
-	```	
+		selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
+```	
   - Since Chrome has updated their files' location, Selenium hasn't fixed it yet. Check `config.ini` Chrome's Category to fix it.
