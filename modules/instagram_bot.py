@@ -1,9 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
-from typing import List, Iterator
+from selenium.common.exceptions import WebDriverException
+from typing import List, Iterator, Callable
 from itertools import chain
-from time import perf_counter
+from time import perf_counter, sleep
 import re
 import sys
 import os
@@ -40,17 +41,10 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.0.4'
+    __version__ = '1.2.0'
 
     
-    def __init__(self, window:bool=True, timeout=30):
-
-        '''
-
-        Web Driver's path
-        Credits: https://github.com/nateshmbhat/webbot/blob/master/webbot/webbot.py
-
-        '''
+    def __init__(self, window:bool=True, timeout:int=30, binary_location:str=None, default_lang:bool=False):
         
         if sys.platform == 'linux' or sys.platform == 'linux2':
             driver_file_name = 'chrome_linux'
@@ -64,8 +58,14 @@ class Bot:
         os.chmod(driver_path , 0o755) 
 
         options = webdriver.ChromeOptions()
-        options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
-        options.headless = not window ; 
+
+        if not default_lang:
+            options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
+
+        options.headless = not window ;
+
+        if binary_location:
+            options.binary_location = binary_location
 
         
         self.driver = webdriver.Chrome(executable_path=driver_path, options=options)
@@ -76,18 +76,54 @@ class Bot:
         self.timeout = timeout
 
     def log_in(self, username:str, password:str):
-        self.driver.get(self.url_login)
+
+        COOKIE_NAME = 'sessionid'
         
+        self.driver.get(self.url_login)
+
+        try:
+
+            with open(f'cookies/{username}.json', 'r') as file:
+                cookie = json.load(file)
+
+        except FileNotFoundError:
+            pass
+        
+        else:
+            self.driver.add_cookie(cookie)
+
+            # I find out that chrome sends a warning message after loading a cookie
+            WebDriverWait(self.driver, self.timeout).until(
+                lambda x: self.driver.get_log('browser'))
+            
+            self.driver.refresh()
+
+
+        # Waits for information about logged status
         WebDriverWait(self.driver, self.timeout).until(
             lambda x: x.find_elements_by_css_selector('form input'))
-        
-        username_input, password_input, *_ = self.driver.find_elements_by_css_selector('form input')
 
-        username_input.send_keys(username)
-        password_input.send_keys(password + Keys.ENTER)
 
-        WebDriverWait(self.driver, self.timeout).until(
-            lambda x: 'js logged-in' in x.find_element_by_tag_name('html').get_attribute('class'))
+        if 'not-logged-in' in self.driver.find_element_by_tag_name('html').get_attribute('class'):
+
+            # Waits for form
+            WebDriverWait(self.driver, self.timeout).until(
+                lambda x: x.find_elements_by_css_selector('form input'))
+            
+            username_input, password_input, *_ = self.driver.find_elements_by_css_selector('form input')
+
+            username_input.send_keys(username)
+            password_input.send_keys(password + Keys.ENTER)
+
+            WebDriverWait(self.driver, self.timeout).until(
+                lambda x: 'js logged-in' in x.find_element_by_tag_name('html').get_attribute('class'))
+            
+            cookie = self.driver.get_cookie(COOKIE_NAME)
+
+            Path('cookies/').mkdir(exist_ok=True)
+
+            with open(f'cookies/{username}.json', 'w') as file:
+                json.dump(cookie, file)
 
 
     def new_tab(self, url:str='https://www.google.com'):
@@ -249,10 +285,6 @@ class Bot:
 
     def send_comment(self, comment:str):
 
-        # Message Popup `Retry` (Timeout=Inf since this won't be an obstacle from the internet)
-        WebDriverWait(self.driver, float('Inf'), 10).until_not(
-            lambda x: x.find_element_by_tag_name('p'))
-
         # Text in Comment's Box
         if not self.driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text:
 
@@ -265,11 +297,16 @@ class Bot:
             comment_box = self.driver \
                     .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
                     .send_keys(comment)
-        
-        # Click Post's Button to send Comment
-        self.driver \
-            .find_element_by_css_selector('article[role=\'presentation\'] form > button') \
-            .click()
+
+        try:
+            
+            # Click Post's Button to send Comment
+            self.driver \
+                .find_element_by_css_selector('article[role=\'presentation\'] form > button') \
+                .click()
+
+        except WebDriverException:
+            sleep(60) # Couldn't comment error pop up. No specific css selector. (<p> was too risky because of pop up's warnings such as cookies one)
 
         # Wait the loading icon disappear
         WebDriverWait(self.driver, self.timeout).until_not(
@@ -277,7 +314,7 @@ class Bot:
         
         
         
-    def comment_post(self, url:str, expr:str, connections:List[str]):
+    def comment_post(self, url:str, expr:str, connections:List[str], get_interval:Callable[[], float]):
         expr_parts = re.split(r'(?<!\\)@', expr)
         n = len(expr_parts) - 1
 
@@ -297,6 +334,7 @@ class Bot:
 
         for comment in comments.generate():
             self.send_comment(comment)
+            sleep(get_interval())
 
 
     def close_driver(self):

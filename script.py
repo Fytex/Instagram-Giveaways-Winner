@@ -1,5 +1,7 @@
 from configparser import ConfigParser
 from modules.instagram_bot import Bot
+from functools import partial
+from random import triangular
 
 
 ASCII = '''
@@ -35,9 +37,19 @@ limit = parser.getint('Optional', 'Limit', fallback=None)
 timeout = parser.getint('Optional', 'Timeout', fallback=30)
 save_only = parser.getboolean('Optional', 'SaveOnly', fallback=False)
 
+
+low = parser.getint('Interval', 'Min', fallback=60)
+high = parser.getint('Interval', 'Max', fallback=120)
+mode = parser.getint('Interval', 'Weight', fallback=None) # None goes for midpoint
+
+
+default_lang = parser.getboolean('Chrome', 'DefaultLang', fallback=False)
+binary_location = parser.get('Chrome', 'Location', fallback=None)
+
+
 print(ASCII)
 
-bot = Bot(window, timeout)
+bot = Bot(window, timeout, binary_location, default_lang)
 
 print('Logging in...')
 
@@ -62,7 +74,9 @@ print(('followers' if from_followers else 'followings') + '\' database complete!
 
 if not save_only:
     print('Let\'s win this giveaway together! Spamming...')
+
+    get_interval = partial(triangular, low, high, mode)
     
-    bot.comment_post(post_link, expr, connections)
+    bot.comment_post(post_link, expr, connections, get_interval)
 
 print('Program finished with success!')

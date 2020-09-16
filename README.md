@@ -34,7 +34,7 @@ But don't worry... if you feel unsafe you can install these files by yourself (j
 
 ### Setup
 
-1. Install Google Chrome (Don't change the instalation's path) -> if you guys start complaining about this specific step I'll make some updates to have wider options 
+1. Install Google Chrome (Check `config.ini` Chrome's category if you want a different path) -> if you guys start complaining about this specific step I'll make some updates to have wider options 
 2. Install Python 3.6+ (Don't forget to add in system variable `PATH`)
 3. Open terminal, change directory to Instagram-Giveaways-Winner's folder and type: `pip install -r requirements.txt`
 4. Edit config.ini (See next category)
@@ -65,6 +65,7 @@ Browser's window can be invisible (in background) if Window's option is deactiva
 - Step 4 is where all the fun begins. It starts spamming mentions in the post.
     - By enabling SaveOnly's option this step won't run. This option is used in case you only want to save the followers/followings and use them later.
     - You can edit the message and add as many mentions as you want (mentions will never be repeated).
+	- Interval Category in `config` file lets you choose how much time it waits before each comment. You have to find out by yourself the best interval that fits your account. It has a min, max and weight so the number isn't always the same preventing Instagram finding out it is a bot. (Later I will try to create kind of an A.I. to do this for you)
     
     
     
@@ -76,6 +77,12 @@ There are two sections:
   
 Depending on what you choose it will save in the respective directory. Then it will choose the file's name using the following format `{UserTarget}_{total}.json` where `UserTarget` is the user where we got the followers/followings and `total` is the number of users we got.
 When searching for a `UserTarget` if the lowest one between the `limit` (in the config file)  and the number of followers/followings from the `UserTarget` is already met in a file then it will skip Step 2 and use that file automatically.
+
+
+
+### How do the cookies work (auto-login)?
+
+When the program logs into your account it saves in a separated folder called `cookies` the correspondent cookie to use it in a next time. This prevents Instagram from blocking your account from suspicious activity because you logged in too many times.
 
 
 ### Warnings:
@@ -90,4 +97,11 @@ Instagram has a comment's request rate-limit to avoid spamming. From my research
   - [ ] Add a way to find followers/followings some at a time until it reaches the limit/maximum. This way we can find followers/followings and post comments in a cycle.
   - [ ] Add specific file from records (database) to use as users to mention
   - [ ] Find out the best interval between each comment for your account
-  - [ ] Login using cookies to prevent logging in too many times using username and password
+  
+  
+### Known Bugs:
+	```
+	raise exception_class(message, screen, stacktrace)
+		# selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
+	```	
+  - Since Chrome has updated their files' location, Selenium hasn't fixed it yet. Check `config.ini` Chrome's Category to fix it.
