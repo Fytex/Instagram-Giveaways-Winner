@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import WebDriverException, StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import WebDriverException
 from typing import List, Iterator, Callable
 from itertools import chain
 from time import perf_counter, sleep
@@ -362,7 +362,7 @@ class Bot:
                     try:
                         self.write_comment(comment)
                         
-                    except WebDriverException: # This would be pretty sure an emoji not in BMP as ChormeDriver supports.
+                    except WebDriverException: # This would be pretty sure a char/emoji not in BMP because ChormeDriver doesn't support.
                             self.override_post_requests_js(comment)
                             comment = '''
                                     Info: Message is fine. If you open this post in another browser you can see it is working. Can\'t show here the real message because there are some characters not supported by ChromeDriver (non-BMP chars)
