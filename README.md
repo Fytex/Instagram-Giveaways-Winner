@@ -95,8 +95,9 @@ Instagram has a comment's request rate-limit to avoid spamming. From my research
 #### Future Updates:
   - [ ] Add a followers/followings tracker so it won't repeat the count if we restart the bot
   - [ ] Add a way to find followers/followings some at a time until it reaches the limit/maximum. This way we can find followers/followings and post comments in a cycle.
-  - [ ] Add specific file from records (database) to use as users to mention
+  - [ ] Set a specific file from records (database) to use as users to mention
   - [ ] Find out the best interval between each comment for your account
+  - [ ] Compatibility with more browsers
   
   
 ### Known Bugs:
