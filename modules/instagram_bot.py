@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, StaleElementReferenceException, NoSuchElementException
 from typing import List, Iterator, Callable
 from itertools import chain
 from time import perf_counter, sleep
@@ -41,7 +41,7 @@ class Comments:
 
 class Bot:
 
-    __version__ = '1.2.1'
+    __version__ = '1.2.3'
 
     
     def __init__(self, window:bool=True, timeout:int=30, binary_location:str=None, default_lang:bool=False):
@@ -175,7 +175,7 @@ class Bot:
         
         if followers:
             connections_link = self.driver.find_element_by_css_selector('ul li a span')
-            connections_limit = int(connections_link.get_attribute('title').replace(',', '').replace('.', ''))
+            connections_limit = int(connections_link.get_attribute('title').replace(',', '').replace('.', '').replace(' ', ''))
         else:
             connections_link = self.driver.find_element_by_css_selector('ul li:nth-child(3) a span')
 
@@ -204,18 +204,12 @@ class Bot:
         connections_link.click()
 
         WebDriverWait(self.driver, self.timeout).until(
-            lambda x: x.find_element_by_css_selector('div[role=\'dialog\'] ul'))
+            lambda x: x.find_element_by_css_selector('div[role=dialog] ul'))
         
-        connections_list = self.driver.find_element_by_css_selector('div[role=\'dialog\'] ul')
+        connections_list = self.driver.find_element_by_css_selector('div[role=dialog] ul')
         connections_count = len(connections_list.find_elements_by_css_selector('li'))
         
-        not_button_area = self.driver.find_element_by_css_selector('div[role=\'dialog\'] ul li > div > div > div:nth-of-type(2)')    
-        not_button_area.click()
-        
-        action_chain = webdriver.ActionChains(self.driver)
-
         last_count = connections_count
-        arrow_down = False
 
         timestamp = perf_counter()
 
@@ -226,27 +220,28 @@ class Bot:
             file = open(f'{path}//{username}_{limit}.json', 'r')
         
         except FileNotFoundError:
+
+            self.driver.execute_script('''
+                elem = document.querySelector('div[role=dialog] > div > div:nth-of-type(2)');
+            ''')
             
             while connections_count < limit and perf_counter() - timestamp < self.timeout:
 
-                if last_count == connections_count:
-                    action_chain.key_up(Keys.PAGE_DOWN).perform()
-                    connections_list.click()
-                    arrow_down = False
+                self.driver.execute_script('''
+                    elem.scrollTo(0,elem.scrollHeight);
+                ''')
+
+                if last_count != connections_count:
                     timestamp = perf_counter()
-                
-                if not arrow_down:
-                    action_chain.key_down(Keys.PAGE_DOWN).perform()
-                    arrow_down = True
                 
                 last_count = connections_count
 
-                connections_count = len(connections_list.find_elements_by_css_selector('li'))
+                connections_count = len(connections_list.find_elements_by_tag_name('li'))
 
             connections = []
         
-            for connection_obj in connections_list.find_elements_by_css_selector('li'):
-                connection = connection_obj.find_element_by_css_selector('a')
+            for connection_obj in connections_list.find_elements_by_tag_name('li'):
+                connection = connection_obj.find_element_by_tag_name('a')
 
                 connection_name = connection.text
 
@@ -283,21 +278,43 @@ class Bot:
         return user
 
 
-    def send_comment(self, comment:str):
+    def write_comment(self, comment:str):
 
-        # Text in Comment's Box
-        if not self.driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text:
+        # Click Comment's Box
+        self.driver \
+            .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
+            .click()
 
-            # Click Comment's Box
-            self.driver \
-                    .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
-                    .click()
+        # Write in Comment's Box
+        comment_box = self.driver \
+                        .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
+                        .send_keys(comment)
 
-            # Write in Comment's Box
-            comment_box = self.driver \
-                    .find_element_by_css_selector('article[role=\'presentation\'] form > textarea') \
-                    .send_keys(comment)
+    def override_post_requests_js(self, comment:str):
+        '''
+            This method was created because ChromeDriver doesn't support characters outside of BMP.
+            Executed javascript code in Chrome's Browser to be able to post those emojis and characters
 
+            Explanation: It overrides HTTP POST requests method in order to change the body (in this case the comment)
+        '''
+
+        
+        self.driver.execute_script('''
+            XMLHttpRequest.prototype.realSend = XMLHttpRequest.prototype.send;
+            let re = RegExp('comment_text=.*&replied_to_comment_id=');
+
+            var newSend = function(vData) {
+                if (re.test(vData)) {
+                    vData = 'comment_text=''' + comment + '''&replied_to_comment_id=';
+                }
+
+                this.realSend(vData); 
+            };
+            XMLHttpRequest.prototype.send = newSend;
+        ''')
+        
+
+    def send_comment(self) -> bool:
         try:
             
             # Click Post's Button to send Comment
@@ -312,6 +329,9 @@ class Bot:
         WebDriverWait(self.driver, self.timeout).until_not(
             lambda x: x.find_element_by_css_selector('article[role=\'presentation\'] form > div'))
         
+        # Text in Comment's Box
+        return not self.driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text
+
         
         
     def comment_post(self, url:str, expr:str, connections:List[str], get_interval:Callable[[], float]):
@@ -333,8 +353,27 @@ class Bot:
 
 
         for comment in comments.generate():
-            self.send_comment(comment)
-            sleep(get_interval())
+            success = False
+            has_input = False
+
+            while not success:
+                
+                if not has_input:
+                    try:
+                        self.write_comment(comment)
+                        
+                    except WebDriverException: # This would be pretty sure an emoji not in BMP as ChormeDriver supports.
+                            self.override_post_requests_js(comment)
+                            comment = '''
+                                    Info: Message is fine. If you open this post in another browser you can see it is working. Can\'t show here the real message because there are some characters not supported by ChromeDriver (non-BMP chars)
+                                    '''
+                            self.write_comment(comment)
+
+                    has_input = True
+
+            
+                success = self.send_comment()
+                sleep(get_interval())
 
 
     def close_driver(self):
