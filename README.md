@@ -110,4 +110,4 @@ If you want to be able to send more comments you have to make a good use of your
 	raise exception_class(message, screen, stacktrace)
 		selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
 ```	
-  - Since Chrome has updated their files' location, Selenium hasn't fixed it yet. Check `config.ini` Browser's Category to fix it.
+  - Since Chrome has updated their files' location, you need to keep Chrome's Driver updated in sync with Google Chrome. In this case just go back to [Pre-Setup-Warning](https://github.com/Fytex/Instagram-Giveaways-Winner#pre-setup-warning) and follow the steps **or** alternately just check `config.ini`'s Browser's Category to fix it.
