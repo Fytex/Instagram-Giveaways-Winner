@@ -45,7 +45,7 @@ save_only = parser.getboolean('Optional', 'Save Only', fallback=False)
 
 low = parser.getint('Interval', 'Min', fallback=60)
 high = parser.getint('Interval', 'Max', fallback=120)
-weight = parser.getint('Interval', 'Weight', fallback=None) # None goes for midpoint
+weight = parser.getint('Interval', 'Weight', fallback=90) # Not specified goes for midpoint
 
 
 window = parser.getboolean('Browser', 'Window', fallback=True)
