@@ -68,12 +68,11 @@ if specific_file:
     if force_search:
         exit('Either choose a Speciic File or Force Search')
 
+does_mention = bool(search(r'(?<!\\)@', expr))        
+        
 if limit:
     if force_search:
         exit('Force Search only works if limit is disabled. Otherwise it will always force search to the limit')
-
-
-    does_mention = bool(search(r'(?<!\\)@', expr))
 
     if does_mention and limit <= 0:
         exit('Limit must be > 0')
