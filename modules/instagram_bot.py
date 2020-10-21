@@ -52,6 +52,8 @@ class Bot(Browser):
 
         self.driver.get(self.url_login)
 
+        self.driver.find_element_by_css_selector('div[role=dialog] button ').click()
+
         try:
 
             with open(f'cookies/{username}.json', 'r') as file:
@@ -178,6 +180,9 @@ class Bot(Browser):
 
         connections_link.click()
 
+        WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'div[role=dialog] > div > div:nth-of-type(2)')))
+
         self.driver.execute_script('''
             elem = document.querySelector('div[role=dialog] > div > div:nth-of-type(2)');
         ''')
@@ -224,7 +229,7 @@ class Bot(Browser):
 
 
             self.driver.execute_script('''
-                    elem.scrollTo(0, elem.scrollHeight);
+                    elem.scrollTo(0, window.elem.scrollHeight);
                 ''')
 
 
