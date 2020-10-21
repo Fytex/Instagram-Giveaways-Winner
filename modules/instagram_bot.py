@@ -18,7 +18,7 @@ from .implicitly_wait import ImplicitlyWait
 
 class Bot(Browser):
 
-    __version__ = '2.0.1'
+    __version__ = '2.0.2'
 
 
     def __init__(self, *args, **kwargs):
