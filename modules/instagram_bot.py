@@ -229,7 +229,7 @@ class Bot(Browser):
 
 
             self.driver.execute_script('''
-                    elem.scrollTo(0, window.elem.scrollHeight);
+                    elem.scrollTo(0, elem.scrollHeight);
                 ''')
 
 
