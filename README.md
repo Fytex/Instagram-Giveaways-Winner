@@ -40,7 +40,7 @@ But don't worry... if you feel unsafe you can install these files by yourself (j
 4. Edit `config.ini` (See next category)
 5. In the same terminal type: `py script.py`
 
-Warning: Avoid resizing or touching the Browser oppened. You can minimize if you want or if you want to get rid of it just change Window at Browser's category to `False` in `config.ini`
+Warning: Avoid resizing or touching the Browser opened. You can minimize if you want or if you want to get rid of it just change Window at Browser's category to `False` in `config.ini`
 
 These commands can change depending on your configuration. Such as python/py/python3... or pip/pip3...
 
