@@ -35,7 +35,7 @@ But don't worry... if you feel unsafe you can install these files by yourself (j
 ### Setup
 
 1. Install Google Chrome (Check Browser's category in `config.ini` if you want a different path) -> if you guys start complaining about this specific step I'll make some updates to have wider options 
-2. Install Python 3.6+ (Don't forget to add in system variable `PATH`)
+2. Install Python 3.6+ (Don't forget to add in system variable `PATH` [You can tick the following checkbox `Add Python 3.X to PATH` while installing Python])
 3. Open terminal, change directory to Instagram-Giveaways-Winner's folder and type: `pip install -r requirements.txt`
 4. Edit `config.ini` (See next category)
 5. In the same terminal type: `py script.py`
