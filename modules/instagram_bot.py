@@ -9,7 +9,7 @@ from selenium.webdriver.common.keys import Keys # type: ignore
 from typing import List, Iterator, Callable, Optional
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
-from selenium.common.exceptions import WebDriverException # type: ignore
+from selenium.common.exceptions import WebDriverException, NoSuchElementException # type: ignore
 
 from .browser import Browser
 from .comments import Comments
@@ -18,7 +18,7 @@ from .implicitly_wait import ImplicitlyWait
 
 class Bot(Browser):
 
-    __version__ = '2.0.2'
+    __version__ = '2.0.3'
 
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +52,17 @@ class Bot(Browser):
 
         self.driver.get(self.url_login)
 
-        self.driver.find_element_by_css_selector('div[role=dialog] button ').click()
+        # Wait until Instagram's home page is visible
+        WebDriverWait(self.driver, self.timeout).until(
+                lambda x: 'js-focus-visible' in x.find_element_by_tag_name('html').get_attribute('class'))
+
+        try:
+            
+            with self.implicitly_wait.ignore():
+                self.driver.find_element_by_css_selector('div[role=dialog] button').click()
+            
+        except NoSuchElementException: # Popup doesn't appear to some people
+            pass
 
         try:
 
