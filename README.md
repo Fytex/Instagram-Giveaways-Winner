@@ -23,7 +23,7 @@ At the beginning there are four steps (It will save data in order to don't waste
 
 Before installing you need to be aware that this folder contains binary files (.exe, .etc) inside `drivers`' folder from an old ChromeDriver's release for a wider compatibility.
 
-But don't worry... if you feel unsafe you can install these files by yourself (just put there because there are people who can't do these by themselves).
+But don't worry... if you feel unsafe you can download these files by yourself (just put there because there are people who can't do these by themselves).
 
 1. Go to chrome://settings/help and find out which is your Chrome's version
 2. Go to https://chromedriver.chromium.org/downloads and find the latest version which supports your Chrome's version.
