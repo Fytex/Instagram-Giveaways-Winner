@@ -9,7 +9,7 @@
 
 
 ## How does this bot work?
-It works as a browser simulator using selenium.
+It works as a browser simulator using selenium. **[Only tested on Windows]**
 
 At the beginning there are four steps (It will save data in order to don't waste your time):
 
