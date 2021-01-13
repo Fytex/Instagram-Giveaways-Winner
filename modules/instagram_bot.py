@@ -22,6 +22,8 @@ class Bot(Browser):
 
 
     def __init__(self, *args, **kwargs):
+        self.checkpoint_filename = 'connections_checkpoint.txt'
+        self.connections_checkpoint = 0
 
         self.url_base = 'https://www.instagram.com/'
         self.url_login = self.url_base + 'accounts/login'
@@ -116,6 +118,8 @@ class Bot(Browser):
             - success: True if we could get the number of connections as the limit
 
         '''
+        if username:
+            self.checkpoint_filename = username+'_'+self.checkpoint_filename
 
         try:
 
@@ -124,7 +128,12 @@ class Bot(Browser):
                 self.connections = list(map(lambda x: x.rstrip('\n'), islice(file, limit) if limit \
                                                                         else file.readlines()))
 
+            with open(f'{self.records_path}//{self.checkpoint_filename}', 'r') as file:
+                self.connections_checkpoint = int(file.read())
+
         except FileNotFoundError:
+            pass
+        except ValueError:
             pass
 
         else:
@@ -361,7 +370,7 @@ class Bot(Browser):
             self.driver.get(url)
 
         def chunks() -> Iterator[str]:
-            for idx in range(0, (len(self.connections) // n) * n, n):
+            for idx in range(self.connections_checkpoint, (len(self.connections) // n) * n, n):
                 yield self.connections[idx:idx + n]
 
         comments = Comments(chunks(), expr_parts)
@@ -393,6 +402,21 @@ class Bot(Browser):
                     self.num_comments += 1
 
                 sleep(get_interval())
+                
+    def save_connectionsList_checkpoint(self, expr:str):
+        '''
+
+        Save the index of where it was, when running the connections list
+
+        Args:
+            - expr      : expression representing comments' pattern
+
+        '''
+    
+        mentionsPerComment = len(re.findall(r'(?<!\\)@', expr))
+        total_mentions = self.num_comments * mentionsPerComment
+        with open(f'{self.records_path}//{self.checkpoint_filename}', 'w') as file:
+            file.write(str(total_mentions))
 
 
     def quit(self, message:str=None):
