@@ -11,6 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
 from selenium.common.exceptions import WebDriverException, NoSuchElementException # type: ignore
 from os import system
+from sys import platform
 
 from .browser import Browser
 from .comments import Comments
@@ -402,7 +403,8 @@ class Bot(Browser):
                 if success:
                     self.num_comments += 1
                 else:
-                    system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification o gnome
+                    if platform == "linux":
+                        system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification for linux
                 
                 sleep_interval = get_interval()
                 print(f'\rAlready posted {self.num_comments} comments. Sending next in {int(sleep_interval)}s', end='')
