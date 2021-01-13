@@ -10,6 +10,7 @@ from typing import List, Iterator, Callable, Optional
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
 from selenium.common.exceptions import WebDriverException, NoSuchElementException # type: ignore
+from os import system
 
 from .browser import Browser
 from .comments import Comments
@@ -400,6 +401,10 @@ class Bot(Browser):
 
                 if success:
                     self.num_comments += 1
+                else:
+                    system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification o gnome
+                
+                print(f'\rAlready posted {self.num_comments} comments', end='')
 
                 sleep(get_interval())
                 
@@ -416,7 +421,7 @@ class Bot(Browser):
         mentionsPerComment = len(re.findall(r'(?<!\\)@', expr))
         total_mentions = self.num_comments * mentionsPerComment
         with open(f'{self.records_path}//{self.checkpoint_filename}', 'w') as file:
-            file.write(str(total_mentions))
+            file.write(str(self.connections_checkpoint+total_mentions))
 
 
     def quit(self, message:str=None):
