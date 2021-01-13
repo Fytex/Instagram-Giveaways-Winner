@@ -404,9 +404,9 @@ class Bot(Browser):
                 else:
                     system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification o gnome
                 
-                print(f'\rAlready posted {self.num_comments} comments', end='')
-
-                sleep(get_interval())
+                sleep_interval = get_interval()
+                print(f'\rAlready posted {self.num_comments} comments. Sending next in {sleep_interval} s', end='')
+                sleep(sleep_interval)
                 
     def save_connectionsList_checkpoint(self, expr:str):
         '''
