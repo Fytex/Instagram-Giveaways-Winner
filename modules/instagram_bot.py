@@ -9,7 +9,7 @@ from selenium.webdriver.common.keys import Keys # type: ignore
 from typing import List, Iterator, Callable, Optional
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
-from selenium.common.exceptions import WebDriverException, NoSuchElementException # type: ignore
+from selenium.common.exceptions import WebDriverException, NoSuchElementException, TimeoutException # type: ignore
 
 from .browser import Browser
 from .comments import Comments
@@ -18,7 +18,7 @@ from .implicitly_wait import ImplicitlyWait
 
 class Bot(Browser):
 
-    __version__ = '2.0.3'
+    __version__ = '2.1.0'
 
 
     def __init__(self, *args, **kwargs):
@@ -333,10 +333,18 @@ class Bot(Browser):
 
             # Wait the loading icon disappear
             WebDriverWait(self.driver, self.timeout).until_not(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'article[role=\'presentation\'] form > div')))
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'article[role=\'presentation\'] form > div[data-visualcompletion=\'loading-state\']')))
 
         # Text in Comment's Box
-        return not self.driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text
+        try:
+
+            WebDriverWait(self.driver, self.timeout).until_not(
+                lambda driver: driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text)
+
+        except TimeoutException:
+            return False
+        else:
+            return True
 
 
 
@@ -392,7 +400,7 @@ class Bot(Browser):
                 if success:
                     self.num_comments += 1
 
-                sleep(get_interval())
+                    sleep(get_interval())
 
 
     def quit(self, message:str=None):
