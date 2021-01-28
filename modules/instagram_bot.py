@@ -323,7 +323,7 @@ class Bot(Browser):
 
             # Click Post's Button to send Comment
             self.driver \
-                .find_element_by_css_selector('article[role=\'presentation\'] form > button') \
+                .find_element_by_css_selector('article[role=\'presentation\'] form > button:nth-of-type(2)') \
                 .click()
 
         except WebDriverException:
