@@ -362,7 +362,7 @@ class Bot(Browser):
         '''
 
 
-        expr_parts = re.split(r'(?<!\\)@', expr)
+        expr_parts = [x.replace('\@', '@') for x in re.split(r'(?<!\\)@', expr)]
         n = len(expr_parts) - 1
 
         if self.driver.current_url != url:
