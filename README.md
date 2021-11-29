@@ -11,7 +11,7 @@
 ## How does this bot work?
 It works as a browser simulator using selenium. **[Only tested on Windows]**
 
-At the beginning there are four steps (It will save data in order to don't waste your time):
+At the beginning there are four steps (It will save data and avoid wasting your time):
 
 1. Log in
 2. Find post's owner
