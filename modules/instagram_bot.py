@@ -9,8 +9,8 @@ from selenium.webdriver.common.keys import Keys # type: ignore
 from typing import List, Iterator, Callable, Optional
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
-from selenium.common.exceptions import WebDriverException, NoSuchElementException # type: ignore
-from os import system
+from selenium.common.exceptions import WebDriverException, NoSuchElementException, TimeoutException # type: ignore
+from os import system, name as os_name
 from sys import platform
 
 from .browser import Browser
@@ -20,7 +20,7 @@ from .implicitly_wait import ImplicitlyWait
 
 class Bot(Browser):
 
-    __version__ = '2.0.3'
+    __version__ = '2.1.1'
 
 
     def __init__(self, *args, **kwargs):
@@ -334,7 +334,7 @@ class Bot(Browser):
 
             # Click Post's Button to send Comment
             self.driver \
-                .find_element_by_css_selector('article[role=\'presentation\'] form > button') \
+                .find_element_by_css_selector('article[role=\'presentation\'] form > button:nth-of-type(2)') \
                 .click()
 
         except WebDriverException:
@@ -344,10 +344,18 @@ class Bot(Browser):
 
             # Wait the loading icon disappear
             WebDriverWait(self.driver, self.timeout).until_not(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'article[role=\'presentation\'] form > div')))
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'article[role=\'presentation\'] form > div[data-visualcompletion=\'loading-state\']')))
 
         # Text in Comment's Box
-        return not self.driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text
+        try:
+
+            WebDriverWait(self.driver, self.timeout).until_not(
+                lambda driver: driver.find_element_by_css_selector('article[role=\'presentation\'] form > textarea').text)
+
+        except TimeoutException:
+            return False
+        else:
+            return True
 
 
 
@@ -365,7 +373,7 @@ class Bot(Browser):
         '''
 
 
-        expr_parts = re.split(r'(?<!\\)@', expr)
+        expr_parts = [x.replace('\@', '@') for x in re.split(r'(?<!\\)@', expr)]
         n = len(expr_parts) - 1
 
         if self.driver.current_url != url:
@@ -405,6 +413,8 @@ class Bot(Browser):
                 else:
                     if platform == "linux":
                         system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification for linux
+                    if any(platform.win32_ver()):
+                        system(f'./scripts/windows_notify.ps1 "Instagram-bot" "failed to comment \'{comment}\'"')
                 
                 sleep_interval = get_interval()
                 print(f'\rAlready posted {self.num_comments} comments. Sending next in {int(sleep_interval)}s', end='')
