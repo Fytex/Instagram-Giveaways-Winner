@@ -10,6 +10,8 @@ from typing import List, Iterator, Callable, Optional
 from selenium.webdriver.support.wait import WebDriverWait # type: ignore
 from selenium.webdriver.support import expected_conditions as EC # type: ignore
 from selenium.common.exceptions import WebDriverException, NoSuchElementException, TimeoutException # type: ignore
+from os import system, name as os_name
+from sys import platform
 
 from .browser import Browser
 from .comments import Comments
@@ -22,6 +24,8 @@ class Bot(Browser):
 
 
     def __init__(self, *args, **kwargs):
+        self.checkpoint_filename = 'connections_checkpoint.txt'
+        self.connections_checkpoint = 0
 
         self.url_base = 'https://www.instagram.com/'
         self.url_login = self.url_base + 'accounts/login'
@@ -116,6 +120,8 @@ class Bot(Browser):
             - success: True if we could get the number of connections as the limit
 
         '''
+        if username:
+            self.checkpoint_filename = username+'_'+self.checkpoint_filename
 
         try:
 
@@ -124,7 +130,12 @@ class Bot(Browser):
                 self.connections = list(map(lambda x: x.rstrip('\n'), islice(file, limit) if limit \
                                                                         else file.readlines()))
 
+            with open(f'{self.records_path}//{self.checkpoint_filename}', 'r') as file:
+                self.connections_checkpoint = int(file.read())
+
         except FileNotFoundError:
+            pass
+        except ValueError:
             pass
 
         else:
@@ -369,7 +380,7 @@ class Bot(Browser):
             self.driver.get(url)
 
         def chunks() -> Iterator[str]:
-            for idx in range(0, (len(self.connections) // n) * n, n):
+            for idx in range(self.connections_checkpoint, (len(self.connections) // n) * n, n):
                 yield self.connections[idx:idx + n]
 
         comments = Comments(chunks(), expr_parts)
@@ -399,8 +410,30 @@ class Bot(Browser):
 
                 if success:
                     self.num_comments += 1
+                else:
+                    if platform == "linux":
+                        system(f'notify-send "Instagram-bot" "failed to comment \'{comment}\'"')    # notification for linux
+                    if any(platform.win32_ver()):
+                        system(f'./scripts/windows_notify.ps1 "Instagram-bot" "failed to comment \'{comment}\'"')
+                
+                sleep_interval = get_interval()
+                print(f'\rAlready posted {self.num_comments} comments. Sending next in {int(sleep_interval)}s', end='')
+                sleep(sleep_interval)
+                
+    def save_connectionsList_checkpoint(self, expr:str):
+        '''
 
-                    sleep(get_interval())
+        Save the index of where it was, when running the connections list
+
+        Args:
+            - expr      : expression representing comments' pattern
+
+        '''
+    
+        mentionsPerComment = len(re.findall(r'(?<!\\)@', expr))
+        total_mentions = self.num_comments * mentionsPerComment
+        with open(f'{self.records_path}//{self.checkpoint_filename}', 'w') as file:
+            file.write(str(self.connections_checkpoint+total_mentions))
 
 
     def quit(self, message:str=None):

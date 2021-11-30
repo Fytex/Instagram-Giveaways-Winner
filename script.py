@@ -166,6 +166,8 @@ elif save_only or does_mention:
 
 if not save_only:
     print('Let\'s win this giveaway together! Spamming...')
+    if bot.connections_checkpoint:
+        print('Checkpoint found, starting at '+str(bot.connections_checkpoint)+' nth connection')
 
     get_interval = partial(triangular, low, high, weight)
 
@@ -174,6 +176,7 @@ if not save_only:
 
     except: # Handle this error in case SIGINT is raised ('ctrl + c') [Can't use KeyboardInterrupt because SIGINT could lead to more errors]
         signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignore SIGINT
+        bot.save_connectionsList_checkpoint(expr)
         bot.quit(f'Early termination. Sent {bot.num_comments} comments so far!')
 
     else:
